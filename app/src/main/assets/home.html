@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Browser 88</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0d09;
+  --surface:#1a1712;
+  --surface-2:#252119;
+  --line:rgba(245,236,218,.08);
+  --text:#f5edd9;
+  --text-2:#a39682;
+  --text-3:#59503f;
+  --accent:#e8a838;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+body{
+  padding:0 22px 40px;
+  max-width:640px;
+  margin-inline:auto;
+  overflow-x:hidden;
+}
+
+/* ---------- hero ---------- */
+.hero{
+  padding:52px 0 40px;
+  text-align:center;
+}
+.hero-mark{
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-weight:500;
+  font-size:clamp(4.5rem,16vw,7rem);
+  line-height:.9;
+  letter-spacing:-.06em;
+  color:var(--accent);
+  margin-bottom:4px;
+}
+.hero-title{
+  font-family:'Fraunces',serif;
+  font-weight:400;
+  font-size:1.15rem;
+  letter-spacing:-.01em;
+  color:var(--text);
+  margin-bottom:6px;
+}
+.hero-sub{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  color:var(--text-3);
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+
+/* ---------- sections ---------- */
+.section{margin-bottom:34px}
+.section-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:var(--text-3);
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  margin-bottom:16px;
+  display:flex;align-items:center;gap:14px;
+}
+.section-label::after{
+  content:'';flex:1;height:1px;background:var(--line);
+}
+
+/* ---------- pins ---------- */
+.pins{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+  gap:12px;
+}
+.pin{
+  aspect-ratio:1;
+  border-radius:18px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:8px;padding:12px 6px;
+  text-decoration:none;color:inherit;
+  transition:transform .15s,background .15s;
+  cursor:pointer;
+}
+.pin:active{transform:scale(.94);background:var(--surface-2)}
+.pin-mark{
+  width:42px;height:42px;
+  border-radius:12px;
+  display:grid;place-items:center;
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-weight:500;
+  font-size:20px;
+  color:#fff;
+}
+.pin-name{
+  font-size:11px;
+  font-weight:500;
+  color:var(--text-2);
+  text-align:center;
+  max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.pins-empty{
+  grid-column:1/-1;
+  padding:34px 20px;
+  text-align:center;
+  background:var(--surface);
+  border:1px dashed var(--line);
+  border-radius:16px;
+}
+.pins-empty-title{
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-size:17px;
+  color:var(--accent);
+  margin-bottom:6px;
+}
+.pins-empty-text{
+  font-size:12.5px;
+  color:var(--text-2);
+  line-height:1.55;
+  max-width:280px;
+  margin-inline:auto;
+}
+
+/* ---------- quick links ---------- */
+.quick{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+.qt{
+  aspect-ratio:1;
+  border-radius:16px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:8px;padding:10px 4px;
+  cursor:pointer;
+  transition:transform .15s,background .15s;
+  text-decoration:none;color:inherit;
+}
+.qt:active{transform:scale(.94);background:var(--surface-2)}
+.qt-mark{
+  width:36px;height:36px;
+  border-radius:10px;
+  display:grid;place-items:center;
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-weight:500;
+  font-size:18px;
+  color:#fff;
+}
+.qt-name{
+  font-size:10.5px;
+  font-weight:500;
+  color:var(--text-2);
+  text-align:center;
+  max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
+/* ---------- footer ---------- */
+.foot{
+  margin-top:56px;
+  padding-top:26px;
+  border-top:1px solid var(--line);
+  text-align:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  color:var(--text-3);
+  line-height:2;
+  letter-spacing:.02em;
+}
+.foot b{color:var(--text-2);font-weight:600}
+.foot a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-mark">88</div>
+  <div class="hero-title">Browser 88</div>
+  <div class="hero-sub">by MC88</div>
+</section>
+
+<section class="section">
+  <div class="section-label">Pinned</div>
+  <div class="pins" id="pins"></div>
+</section>
+
+<section class="section">
+  <div class="section-label">Quick links</div>
+  <div class="quick">
+    <a class="qt" data-url="https://duckduckgo.com">
+      <div class="qt-mark" style="background:#de5833">D</div>
+      <span class="qt-name">DuckDuckGo</span>
+    </a>
+    <a class="qt" data-url="https://wikipedia.org">
+      <div class="qt-mark" style="background:#3a3a3a">W</div>
+      <span class="qt-name">Wikipedia</span>
+    </a>
+    <a class="qt" data-url="https://github.com">
+      <div class="qt-mark" style="background:#24292e">G</div>
+      <span class="qt-name">GitHub</span>
+    </a>
+    <a class="qt" data-url="https://news.ycombinator.com">
+      <div class="qt-mark" style="background:#ff6600">H</div>
+      <span class="qt-name">Hacker News</span>
+    </a>
+  </div>
+</section>
+
+<footer class="foot">
+  <b>Browser 88</b><br>
+  Copyright &copy; 2026 MC88<br>
+  <a href="mailto:mohamed005cheikh@gmail.com">mohamed005cheikh@gmail.com</a><br>
+  MIT License
+</footer>
+
+<script>
+(function(){
+'use strict';
+
+const IS_ANDROID = typeof window.AndroidBridge !== 'undefined' && window.AndroidBridge !== null;
+
+// quiet palette for pin marks
+const COLORS = ['#b45309','#0369a1','#166534','#7c2d12','#6d28d9','#9d174d','#0f766e','#854d0e'];
+
+function colorFor(name){
+  let h = 0;
+  for(let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
+  return COLORS[Math.abs(h) % COLORS.length];
+}
+
+function initials(name){
+  const parts = String(name || '').replace(/[^\w\s-]/g, '').trim().split(/\s+/).filter(Boolean);
+  if(!parts.length) return '?';
+  if(parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+function esc(s){
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+function renderPins(pins){
+  const el = document.getElementById('pins');
+  if(!pins || !pins.length){
+    el.innerHTML = `
+      <div class="pins-empty">
+        <div class="pins-empty-title">No pins yet</div>
+        <div class="pins-empty-text">Open any page, then tap the star at the bottom to save it here.</div>
+      </div>`;
+    return;
+  }
+  el.innerHTML = pins.map(p => {
+    const name = esc(p.name || p.url || '');
+    const url = esc(p.url || '');
+    const mark = esc(initials(p.name || p.url || '?'));
+    const col = colorFor(p.name || p.url || 'x');
+    return '<a class="pin" data-url="' + url + '">'
+         +   '<div class="pin-mark" style="background:' + col + '">' + mark + '</div>'
+         +   '<span class="pin-name">' + name + '</span>'
+         + '</a>';
+  }).join('');
+}
+
+// load pins from native storage when available
+if(IS_ANDROID && typeof window.AndroidBridge.getPins === 'function'){
+  try {
+    const raw = window.AndroidBridge.getPins();
+    renderPins(JSON.parse(raw || '[]'));
+  } catch(e){ renderPins([]); }
+} else {
+  renderPins([]);
+}
+
+// any tile that carries a data-url navigates
+document.addEventListener('click', e => {
+  const tile = e.target.closest('.pin, .qt');
+  if(!tile) return;
+  e.preventDefault();
+  const url = tile.dataset.url;
+  if(!url) return;
+  if(IS_ANDROID && typeof window.AndroidBridge.navigate === 'function'){
+    try { window.AndroidBridge.navigate(url); } catch(err){}
+  }
+});
+
+})();
+</script>
+</body>
+</html>
