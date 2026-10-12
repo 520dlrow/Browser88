@@ -1,0 +1,979 @@
+<!doctype html>
+<html lang="en" data-theme="ember">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0f0d09" id="themeMeta">
+<title>Browser 88</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ---------- themes ---------- */
+:root,:root[data-theme="ember"]{
+  --bg:#0f0d09;--surface:#1a1712;--surface-2:#252119;--surface-3:#302b21;
+  --line:rgba(245,236,218,.08);--line-2:rgba(245,236,218,.14);
+  --text:#f5edd9;--text-2:#a39682;--text-3:#59503f;
+  --accent:#e8a838;--accent-2:#c78a24;--on-accent:#0f0d09;
+  --danger:#d94c40;--ok:#7db359;
+  color-scheme:dark;
+}
+:root[data-theme="paper"]{
+  --bg:#f7f2e6;--surface:#fdfaf2;--surface-2:#f2ecdc;--surface-3:#e8e0cb;
+  --line:rgba(30,25,18,.08);--line-2:rgba(30,25,18,.14);
+  --text:#1e1912;--text-2:#6a6152;--text-3:#9c9280;
+  --accent:#b8641a;--accent-2:#96500f;--on-accent:#ffffff;
+  --danger:#b32a1a;--ok:#4a7a2a;
+  color-scheme:light;
+}
+:root[data-theme="midnight"]{
+  --bg:#0a0e14;--surface:#141a24;--surface-2:#1e2632;--surface-3:#283240;
+  --line:rgba(200,220,240,.08);--line-2:rgba(200,220,240,.14);
+  --text:#e8f0f8;--text-2:#94a4b4;--text-3:#4a5866;
+  --accent:#6db8e8;--accent-2:#4a98c8;--on-accent:#0a0e14;
+  --danger:#e05a4a;--ok:#6dc86d;
+  color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  background:transparent;
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input{font:inherit;color:inherit;border:0;background:none;outline:none}
+svg{display:block}
+.hidden{display:none!important}
+
+/* ---------- top bar ---------- */
+.top-bar{
+  position:absolute;top:0;left:0;right:0;
+  height:64px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:10px;
+  padding:0 12px;
+  padding-top:env(safe-area-inset-top);
+  height:calc(64px + env(safe-area-inset-top));
+  background:var(--bg);
+  border-bottom:1px solid var(--line);
+  z-index:10;
+}
+.brand-mark{
+  width:40px;height:40px;
+  display:grid;place-items:center;
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-weight:500;
+  font-size:19px;
+  color:var(--accent);
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+  letter-spacing:-.04em;
+  flex-shrink:0;
+  transition:transform .15s,background .15s;
+}
+.brand-mark:active{transform:scale(.94);background:var(--surface-2)}
+
+.url-bar{
+  position:relative;
+  display:flex;align-items:center;gap:9px;
+  height:40px;
+  padding:0 12px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+  min-width:0;
+  transition:border-color .2s,background .2s;
+}
+.url-bar:focus-within{
+  border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+  background:var(--surface-2);
+}
+.url-lock{
+  width:14px;height:14px;flex-shrink:0;
+  stroke:var(--text-3);fill:none;
+  stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
+}
+.url-bar.secure .url-lock{stroke:var(--ok)}
+.url-bar.insecure .url-lock{stroke:var(--danger)}
+.url-input{
+  flex:1;min-width:0;height:100%;
+  font-size:14px;
+  color:var(--text);
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+.url-input::placeholder{
+  color:var(--text-3);
+  font-style:italic;
+}
+.url-bar:not(:focus-within) .url-input{
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  letter-spacing:-.01em;
+}
+.url-clear{
+  width:22px;height:22px;
+  display:none;place-items:center;
+  border-radius:50%;
+  color:var(--text-3);
+  flex-shrink:0;
+}
+.url-clear.on{display:grid}
+.url-clear svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+.url-progress{
+  position:absolute;left:0;right:0;bottom:-1px;
+  height:2px;overflow:hidden;
+  opacity:0;transition:opacity .3s;
+  pointer-events:none;
+}
+.url-progress.on{opacity:1}
+.url-progress::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  background-size:40% 100%;
+  animation:sweep 1.2s linear infinite;
+}
+@keyframes sweep{0%{background-position:-40% 0}100%{background-position:140% 0}}
+
+.menu-btn{
+  width:40px;height:40px;
+  display:grid;place-items:center;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+  color:var(--text-2);
+  transition:transform .15s,background .15s,color .15s;
+  flex-shrink:0;
+}
+.menu-btn:active{transform:scale(.94);background:var(--surface-2);color:var(--accent)}
+.menu-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+
+/* ---------- dock ---------- */
+.dock{
+  position:absolute;bottom:0;left:0;right:0;
+  height:64px;
+  padding-bottom:env(safe-area-inset-bottom);
+  height:calc(64px + env(safe-area-inset-bottom));
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  align-items:center;
+  background:var(--surface);
+  border-top:1px solid var(--line);
+  z-index:10;
+}
+.dock-btn{
+  height:100%;
+  display:grid;place-items:center;
+  color:var(--text-2);
+  transition:color .15s,transform .12s;
+  position:relative;
+}
+.dock-btn:active{transform:scale(.9)}
+.dock-btn:disabled{opacity:.28}
+.dock-btn.active{color:var(--accent)}
+.dock-btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- scrim ---------- */
+.scrim{
+  position:fixed;inset:0;z-index:50;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  opacity:0;pointer-events:none;
+  transition:opacity .3s;
+}
+.scrim.on{opacity:1;pointer-events:auto}
+
+/* ---------- sheet ---------- */
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;
+  max-height:88vh;
+  background:var(--surface);
+  border-top-left-radius:24px;
+  border-top-right-radius:24px;
+  box-shadow:0 -30px 80px rgba(0,0,0,.55);
+  transform:translateY(100%);
+  transition:transform .45s cubic-bezier(.2,.8,.2,1);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.sheet.on{transform:translateY(0)}
+.sheet-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+  padding:22px 24px 18px;
+  border-bottom:1px solid var(--line);
+  flex-shrink:0;
+}
+.sheet-title{
+  font-family:'Fraunces',serif;
+  font-weight:400;
+  font-size:24px;
+  letter-spacing:-.02em;
+  line-height:1.1;
+}
+.sheet-title em{font-style:italic;color:var(--accent)}
+.sheet-sub{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  color:var(--text-3);
+  letter-spacing:.06em;
+  margin-top:4px;
+}
+.sheet-actions{display:flex;gap:8px;flex-shrink:0}
+.icon-btn{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  display:grid;place-items:center;
+  color:var(--text-2);
+  transition:all .15s;
+}
+.icon-btn:active{transform:scale(.92);color:var(--accent)}
+.icon-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.sheet-body{
+  flex:1;overflow-y:auto;
+  padding-bottom:calc(20px + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling:touch;
+}
+.sheet-body::-webkit-scrollbar{width:5px}
+.sheet-body::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:3px}
+
+/* ---------- history list ---------- */
+.hist-item{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:14px;
+  padding:14px 24px;
+  border-bottom:1px solid var(--line);
+  cursor:pointer;
+  transition:background .12s;
+}
+.hist-item:active{background:var(--surface-2)}
+.hist-dot{
+  width:9px;height:9px;border-radius:50%;
+  background:var(--accent);opacity:.7;
+  flex-shrink:0;
+}
+.hist-meta{min-width:0}
+.hist-title{
+  font-size:14px;font-weight:500;color:var(--text);
+  margin-bottom:3px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.hist-url{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--text-3);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.hist-time{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;color:var(--text-3);
+  flex-shrink:0;
+}
+
+.empty-state{
+  padding:70px 24px;text-align:center;
+}
+.empty-mark{
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-size:44px;
+  color:var(--surface-3);
+  line-height:1;
+  margin-bottom:16px;
+}
+.empty-title{
+  font-family:'Fraunces',serif;
+  font-size:20px;
+  font-weight:400;
+  color:var(--text-2);
+  margin-bottom:6px;
+}
+.empty-text{
+  font-size:13px;
+  color:var(--text-3);
+  line-height:1.6;
+  max-width:260px;
+  margin-inline:auto;
+}
+
+/* ---------- settings ---------- */
+.set-section{padding:20px 24px 8px}
+.set-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  color:var(--text-3);
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  margin-bottom:12px;
+  display:flex;align-items:center;gap:12px;
+}
+.set-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.set-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:14px;
+  padding:14px 0;
+  border-bottom:1px solid var(--line);
+  cursor:pointer;
+}
+.set-row:last-child{border-bottom:0}
+.set-row:active{opacity:.7}
+.set-info{flex:1;min-width:0}
+.set-title{font-size:14.5px;font-weight:500;color:var(--text);margin-bottom:3px}
+.set-desc{font-size:12px;color:var(--text-3);line-height:1.4}
+.toggle{
+  width:46px;height:28px;border-radius:14px;
+  background:var(--surface-3);
+  border:1px solid var(--line-2);
+  position:relative;
+  transition:background .25s,border-color .25s;
+  flex-shrink:0;
+}
+.toggle::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;border-radius:50%;
+  background:var(--text-2);
+  transition:transform .28s cubic-bezier(.2,.8,.2,1),background .25s;
+}
+.toggle.on{background:color-mix(in srgb,var(--accent) 22%,transparent);border-color:color-mix(in srgb,var(--accent) 55%,transparent)}
+.toggle.on::after{transform:translateX(18px);background:var(--accent)}
+
+.theme-row{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  padding:6px 0 4px;
+}
+.theme-pick{
+  padding:14px 12px;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:14px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  transition:all .2s;
+  cursor:pointer;
+}
+.theme-pick:active{transform:scale(.96)}
+.theme-pick.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--surface-2))}
+.theme-swatches{display:flex;gap:3px}
+.theme-swatches span{width:14px;height:14px;border-radius:4px;display:block}
+.theme-pick .name{
+  font-size:12px;font-weight:600;
+  color:var(--text-2);
+  letter-spacing:.02em;
+}
+.theme-pick.active .name{color:var(--accent)}
+
+.credits{
+  padding:26px 24px 12px;
+  text-align:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  color:var(--text-3);
+  line-height:2;
+  letter-spacing:.02em;
+  border-top:1px solid var(--line);
+  margin-top:16px;
+}
+.credits b{color:var(--text-2);font-weight:600}
+.credits a{color:var(--accent);text-decoration:none}
+
+/* ---------- pin form ---------- */
+.pin-form{padding:20px 24px 24px;display:flex;flex-direction:column;gap:16px}
+.field{display:flex;flex-direction:column;gap:8px}
+.field-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;color:var(--text-3);
+  letter-spacing:.12em;text-transform:uppercase;
+}
+.field-input{
+  height:48px;padding:0 16px;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:12px;
+  color:var(--text);
+  font-size:15px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  transition:border-color .15s;
+}
+.field-input:focus{border-color:color-mix(in srgb,var(--accent) 55%,transparent)}
+.field-static{
+  padding:14px 16px;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:12px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  color:var(--text-2);
+  word-break:break-all;
+  max-height:100px;overflow-y:auto;
+}
+.save-btn{
+  height:52px;
+  border-radius:14px;
+  background:var(--accent);
+  color:var(--on-accent);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-weight:600;
+  font-size:15px;
+  letter-spacing:.01em;
+  transition:transform .15s,background .15s;
+  cursor:pointer;
+}
+.save-btn:active{transform:scale(.97);background:var(--accent-2)}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;
+  left:50%;bottom:calc(88px + env(safe-area-inset-bottom));
+  transform:translate(-50%,20px);
+  padding:11px 20px;
+  background:var(--text);
+  color:var(--bg);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13.5px;
+  font-weight:500;
+  border-radius:12px;
+  white-space:nowrap;
+  opacity:0;pointer-events:none;
+  transition:opacity .25s,transform .3s cubic-bezier(.2,.8,.2,1);
+  z-index:200;
+  max-width:calc(100vw - 40px);
+  overflow:hidden;text-overflow:ellipsis;
+  box-shadow:0 14px 40px -10px rgba(0,0,0,.5);
+}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast.err{background:var(--danger);color:#fff}
+</style>
+</head>
+<body>
+
+<header class="top-bar">
+  <button class="brand-mark" id="brandBtn" title="Home">88</button>
+  <div class="url-bar" id="urlBar">
+    <svg class="url-lock" id="lockIcon" viewBox="0 0 24 24">
+      <rect x="4" y="10" width="16" height="10" rx="2.4"/>
+      <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+    </svg>
+    <input class="url-input" id="urlInput" type="text"
+           placeholder="Search or enter address"
+           autocomplete="off" autocorrect="off" autocapitalize="off"
+           spellcheck="false" inputmode="url" enterkeyhint="go">
+    <button class="url-clear" id="urlClear" type="button" aria-label="Clear">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="url-progress" id="urlProgress"></div>
+  </div>
+  <button class="menu-btn" id="menuBtn" title="Menu">
+    <svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="14" y2="17"/></svg>
+  </button>
+</header>
+
+<nav class="dock">
+  <button class="dock-btn" id="backBtn" disabled>
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <button class="dock-btn" id="fwdBtn" disabled>
+    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+  <button class="dock-btn" id="reloadBtn">
+    <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+  </button>
+  <button class="dock-btn" id="homeBtn">
+    <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+  </button>
+  <button class="dock-btn" id="pinBtn">
+    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+  </button>
+</nav>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="sheet" id="historySheet">
+  <header class="sheet-head">
+    <div>
+      <h2 class="sheet-title">Recent <em>pages</em></h2>
+      <p class="sheet-sub" id="histCount">0 entries</p>
+    </div>
+    <div class="sheet-actions">
+      <button class="icon-btn" id="clearHist" title="Clear all">
+        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+      </button>
+      <button class="icon-btn" id="closeHist" title="Close">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="sheet-body" id="histBody"></div>
+</div>
+
+<div class="sheet" id="menuSheet">
+  <header class="sheet-head">
+    <div>
+      <h2 class="sheet-title">Browser <em>88</em></h2>
+      <p class="sheet-sub">Settings &amp; appearance</p>
+    </div>
+    <div class="sheet-actions">
+      <button class="icon-btn" id="closeMenu" title="Close">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="sheet-body">
+
+    <div class="set-section">
+      <div class="set-label">Appearance</div>
+      <div class="theme-row" id="themeRow">
+        <button class="theme-pick" data-theme-id="ember">
+          <div class="theme-swatches">
+            <span style="background:#0f0d09"></span>
+            <span style="background:#1a1712"></span>
+            <span style="background:#e8a838"></span>
+          </div>
+          <span class="name">Ember</span>
+        </button>
+        <button class="theme-pick" data-theme-id="paper">
+          <div class="theme-swatches">
+            <span style="background:#f7f2e6"></span>
+            <span style="background:#fdfaf2"></span>
+            <span style="background:#b8641a"></span>
+          </div>
+          <span class="name">Paper</span>
+        </button>
+        <button class="theme-pick" data-theme-id="midnight">
+          <div class="theme-swatches">
+            <span style="background:#0a0e14"></span>
+            <span style="background:#141a24"></span>
+            <span style="background:#6db8e8"></span>
+          </div>
+          <span class="name">Midnight</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="set-section">
+      <div class="set-label">Browsing</div>
+
+      <div class="set-row" id="rowAdblock">
+        <div class="set-info">
+          <div class="set-title">Ad blocker</div>
+          <div class="set-desc" id="adblockDesc">Blocks known ad domains</div>
+        </div>
+        <div class="toggle on" id="togAdblock"></div>
+      </div>
+
+      <div class="set-row" id="rowDesktop">
+        <div class="set-info">
+          <div class="set-title">Desktop site</div>
+          <div class="set-desc">Request the full-width layout</div>
+        </div>
+        <div class="toggle" id="togDesktop"></div>
+      </div>
+
+      <div class="set-row" id="rowShare">
+        <div class="set-info">
+          <div class="set-title">Share current page</div>
+          <div class="set-desc">Send the link to another app</div>
+        </div>
+      </div>
+
+      <div class="set-row" id="rowCopy">
+        <div class="set-info">
+          <div class="set-title">Copy page address</div>
+          <div class="set-desc">Copy the URL to the clipboard</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="set-section">
+      <div class="set-label">Data</div>
+      <div class="set-row" id="rowClear">
+        <div class="set-info">
+          <div class="set-title">Clear browsing data</div>
+          <div class="set-desc">Cookies, cache and history</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="credits">
+      <b>Browser 88</b><br>
+      Copyright &copy; 2026 MC88<br>
+      <a href="mailto:mohamed005cheikh@gmail.com">mohamed005cheikh@gmail.com</a><br>
+      MIT License
+    </div>
+
+  </div>
+</div>
+
+<div class="sheet" id="pinSheet">
+  <header class="sheet-head">
+    <div>
+      <h2 class="sheet-title">Pin to <em>taskbar</em></h2>
+      <p class="sheet-sub">Save this page as a shortcut</p>
+    </div>
+    <div class="sheet-actions">
+      <button class="icon-btn" id="closePin" title="Close">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="pin-form">
+    <div class="field">
+      <label class="field-label">Name</label>
+      <input class="field-input" id="pinName" type="text" placeholder="Shortcut name" maxlength="40">
+    </div>
+    <div class="field">
+      <label class="field-label">Address</label>
+      <div class="field-static" id="pinUrl">&mdash;</div>
+    </div>
+    <button class="save-btn" id="pinSave">Pin to taskbar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+
+const $ = id => document.getElementById(id);
+const IS_ANDROID = typeof window.AndroidBridge !== 'undefined' && window.AndroidBridge !== null;
+
+function bridge(method){
+  if(!IS_ANDROID) return;
+  const fn = window.AndroidBridge[method];
+  if(typeof fn !== 'function') return;
+  try { fn.apply(window.AndroidBridge, Array.prototype.slice.call(arguments, 1)); }
+  catch(e){}
+}
+
+/* ---------- toast ---------- */
+let toastTimer;
+function toast(msg, kind){
+  const el = $('toast');
+  el.textContent = msg;
+  el.className = 'toast' + (kind === 'err' ? ' err' : '');
+  void el.offsetWidth;
+  el.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('on'), 2200);
+}
+
+/* ---------- themes ---------- */
+const THEMES = ['ember','paper','midnight'];
+const THEME_META = { ember:'#0f0d09', paper:'#f7f2e6', midnight:'#0a0e14' };
+
+function applyTheme(id){
+  if(!THEMES.includes(id)) id = 'ember';
+  document.documentElement.dataset.theme = id;
+  $('themeMeta').setAttribute('content', THEME_META[id]);
+  try { localStorage.setItem('b88.theme', id); } catch(e){}
+  document.querySelectorAll('.theme-pick').forEach(p => {
+    p.classList.toggle('active', p.dataset.themeId === id);
+  });
+}
+
+try {
+  const saved = localStorage.getItem('b88.theme');
+  applyTheme(saved || 'ember');
+} catch(e){ applyTheme('ember'); }
+
+$('themeRow').addEventListener('click', e => {
+  const pick = e.target.closest('.theme-pick');
+  if(!pick) return;
+  applyTheme(pick.dataset.themeId);
+  toast('Theme: ' + pick.querySelector('.name').textContent);
+});
+
+/* ---------- state ---------- */
+let currentUrl = '';
+let currentTitle = '';
+let currentSheet = null;
+
+const urlBar = $('urlBar');
+const urlInput = $('urlInput');
+const urlClear = $('urlClear');
+const urlProgress = $('urlProgress');
+
+/* ---------- URL normalize ---------- */
+function normalize(raw){
+  let s = String(raw || '').trim();
+  if(!s) return '';
+  if(/^https?:\/\//i.test(s)) return s;
+  if(/^about:blank$/i.test(s)) return s;
+  if(/^[\w-]+(\.[\w-]+)+(\/.*)?$/.test(s)) return 'https://' + s;
+  if(/^localhost(:\d+)?/.test(s)) return 'http://' + s;
+  return 'https://duckduckgo.com/?q=' + encodeURIComponent(s);
+}
+
+function prettyUrl(url){
+  if(!url) return '';
+  try {
+    const u = new URL(url);
+    let s = u.hostname.replace(/^www\./, '') + (u.pathname === '/' ? '' : u.pathname);
+    if(u.search) s += u.search;
+    return s;
+  } catch(e){ return url; }
+}
+
+/* ---------- URL bar interactions ---------- */
+urlInput.addEventListener('focus', () => {
+  if(currentUrl) urlInput.value = currentUrl;
+  setTimeout(() => urlInput.select(), 20);
+});
+
+urlInput.addEventListener('blur', () => {
+  if(!urlInput.value.trim() && currentUrl) urlInput.value = prettyUrl(currentUrl);
+});
+
+urlInput.addEventListener('input', () => {
+  urlClear.classList.toggle('on', !!urlInput.value.trim());
+});
+
+urlInput.addEventListener('keydown', e => {
+  if(e.key === 'Enter'){
+    e.preventDefault();
+    const target = normalize(urlInput.value);
+    if(target){
+      urlInput.blur();
+      bridge('navigate', target);
+    }
+  }
+});
+
+urlClear.addEventListener('click', () => {
+  urlInput.value = '';
+  urlInput.focus();
+  urlClear.classList.remove('on');
+});
+
+/* ---------- sheets ---------- */
+function openSheet(name){
+  closeSheets();
+  $('scrim').classList.add('on');
+  bridge('setSheetOpen', true);
+  currentSheet = name;
+  if(name === 'history'){ $('historySheet').classList.add('on'); renderHistory(); }
+  else if(name === 'menu'){ $('menuSheet').classList.add('on'); refreshMenu(); }
+  else if(name === 'pin'){ $('pinSheet').classList.add('on'); renderPin(); }
+}
+
+function closeSheets(){
+  $('historySheet').classList.remove('on');
+  $('menuSheet').classList.remove('on');
+  $('pinSheet').classList.remove('on');
+  $('scrim').classList.remove('on');
+  currentSheet = null;
+  bridge('setSheetOpen', false);
+}
+
+$('scrim').addEventListener('click', closeSheets);
+$('closeHist').addEventListener('click', closeSheets);
+$('closeMenu').addEventListener('click', closeSheets);
+$('closePin').addEventListener('click', closeSheets);
+
+/* ---------- dock ---------- */
+$('brandBtn').addEventListener('click', () => bridge('goHome'));
+$('backBtn').addEventListener('click', () => bridge('goBack'));
+$('fwdBtn').addEventListener('click', () => bridge('goForward'));
+$('reloadBtn').addEventListener('click', () => bridge('reload'));
+$('homeBtn').addEventListener('click', () => bridge('goHome'));
+$('pinBtn').addEventListener('click', () => openSheet('pin'));
+$('menuBtn').addEventListener('click', () => openSheet('menu'));
+
+/* ---------- settings storage ---------- */
+function getSetting(k, d){
+  try {
+    const v = localStorage.getItem('b88.' + k);
+    return v === null ? d : JSON.parse(v);
+  } catch(e){ return d; }
+}
+function setSetting(k, v){
+  try { localStorage.setItem('b88.' + k, JSON.stringify(v)); } catch(e){}
+}
+
+function refreshMenu(){
+  $('togAdblock').classList.toggle('on', getSetting('adblock', true));
+  $('togDesktop').classList.toggle('on', getSetting('desktop', false));
+  const blocked = getSetting('blocked', 0);
+  $('adblockDesc').textContent = blocked > 0
+    ? blocked + ' request' + (blocked === 1 ? '' : 's') + ' blocked'
+    : 'Blocks known ad domains';
+}
+
+$('rowAdblock').addEventListener('click', () => {
+  const now = getSetting('adblock', true);
+  setSetting('adblock', !now);
+  refreshMenu();
+  bridge('setAdblock', !now);
+});
+
+$('rowDesktop').addEventListener('click', () => {
+  const now = getSetting('desktop', false);
+  setSetting('desktop', !now);
+  refreshMenu();
+  bridge('setDesktopMode', !now);
+});
+
+$('rowShare').addEventListener('click', () => {
+  if(!currentUrl){ toast('No page to share'); return; }
+  closeSheets();
+  bridge('share', currentUrl);
+});
+
+$('rowCopy').addEventListener('click', () => {
+  if(!currentUrl){ toast('No page to copy'); return; }
+  navigator.clipboard.writeText(currentUrl).then(
+    () => toast('Address copied'),
+    () => toast('Copy failed', 'err')
+  );
+});
+
+$('rowClear').addEventListener('click', () => {
+  closeSheets();
+  bridge('clearAllData');
+  toast('Browsing data cleared');
+});
+
+/* ---------- history ---------- */
+function escapeHtml(s){
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+function timeAgo(ts){
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if(s < 60) return s + 's';
+  const m = Math.floor(s / 60);
+  if(m < 60) return m + 'm';
+  const h = Math.floor(m / 60);
+  if(h < 24) return h + 'h';
+  const d = Math.floor(h / 24);
+  if(d < 30) return d + 'd';
+  return new Date(ts).toLocaleDateString(undefined, { month:'short', day:'numeric' });
+}
+function getHistory(){
+  try { return JSON.parse(localStorage.getItem('b88.history') || '[]'); }
+  catch(e){ return []; }
+}
+function saveHistory(h){
+  try { localStorage.setItem('b88.history', JSON.stringify(h.slice(0, 300))); } catch(e){}
+}
+
+function renderHistory(){
+  const list = getHistory();
+  const body = $('histBody');
+  $('histCount').textContent = list.length + (list.length === 1 ? ' entry' : ' entries');
+
+  if(!list.length){
+    body.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-mark">88</div>
+        <div class="empty-title">Nothing here yet</div>
+        <div class="empty-text">Pages you visit will appear here. You can clear this list at any time.</div>
+      </div>`;
+    return;
+  }
+
+  body.innerHTML = list.map((h, i) => `
+    <div class="hist-item" data-idx="${i}">
+      <span class="hist-dot"></span>
+      <div class="hist-meta">
+        <div class="hist-title">${escapeHtml(h.title || prettyUrl(h.url) || 'Untitled')}</div>
+        <div class="hist-url">${escapeHtml(prettyUrl(h.url))}</div>
+      </div>
+      <span class="hist-time">${timeAgo(h.t)}</span>
+    </div>
+  `).join('');
+
+  body.querySelectorAll('.hist-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const item = list[+el.dataset.idx];
+      if(item){
+        closeSheets();
+        bridge('navigate', item.url);
+      }
+    });
+  });
+}
+
+$('clearHist').addEventListener('click', () => {
+  try { localStorage.removeItem('b88.history'); } catch(e){}
+  renderHistory();
+  toast('History cleared');
+});
+
+/* ---------- pin ---------- */
+function renderPin(){
+  $('pinName').value = currentTitle || prettyUrl(currentUrl) || '';
+  $('pinUrl').textContent = currentUrl || '—';
+  setTimeout(() => $('pinName').focus(), 180);
+}
+
+$('pinSave').addEventListener('click', () => {
+  const name = ($('pinName').value || '').trim() || prettyUrl(currentUrl) || 'Shortcut';
+  if(!currentUrl){ toast('No page to pin', 'err'); return; }
+  bridge('addPin', name, currentUrl);
+  closeSheets();
+  toast('Pinned · ' + name);
+});
+
+/* ---------- bridge callbacks ---------- */
+window.shellSetUrl = (url) => {
+  currentUrl = url || '';
+  urlClear.classList.toggle('on', !!urlInput.value.trim() && document.activeElement === urlInput);
+  if(document.activeElement !== urlInput){
+    urlInput.value = url ? prettyUrl(url) : '';
+  }
+  urlBar.classList.remove('secure','insecure');
+  if(url){
+    if(/^https:\/\//i.test(url)) urlBar.classList.add('secure');
+    else if(/^http:\/\//i.test(url)) urlBar.classList.add('insecure');
+  }
+};
+
+window.shellSetProgress = (loading) => {
+  urlProgress.classList.toggle('on', !!loading);
+};
+
+window.shellSetNav = (canBack, canForward) => {
+  $('backBtn').disabled = !canBack;
+  $('fwdBtn').disabled = !canForward;
+};
+
+window.shellOnPageLoaded = (url, title) => {
+  if(!url || url.startsWith('file://')) return;
+  currentUrl = url;
+  currentTitle = title || '';
+  const h = getHistory();
+  if(h[0] && h[0].url === url){
+    h[0].t = Date.now();
+    h[0].title = title;
+  } else {
+    h.unshift({ url, title, t: Date.now() });
+  }
+  saveHistory(h);
+};
+
+window.shellSetBlocked = (count) => {
+  setSetting('blocked', count);
+  if(currentSheet === 'menu') refreshMenu();
+};
+
+/* ---------- boot ---------- */
+refreshMenu();
+
+})();
+</script>
+</body>
+</html>
