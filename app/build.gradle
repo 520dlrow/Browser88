@@ -30,6 +30,13 @@ android {
     }
 }
 
+// kotlin-stdlib-jdk7 and jdk8 were merged into stdlib since 1.8.
+// This project is Java-only, so we exclude the old split modules entirely.
+configurations.all {
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+}
+
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.core:core:1.13.1'
